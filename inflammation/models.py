@@ -53,4 +53,8 @@ def patient_normalise(data):
     normalised[normalised < 0] = 0
     return normalised
 
+def logistic_map(r: float, x: float) -> float:
+    return r * x * (1 - x)
+
+
 
