@@ -60,6 +60,17 @@ def daily_min(data):
     :returns: An array of min daily values"""
     return np.min(data, axis=0)
 
+def daily_s_dev(data):
+    """Computes and returns standard deviation for data."""
+    data_mean = np.mean(data, axis=0)
+    devs = []
+    for entry in data:
+        devs.append((entry - mmm) * (entry - mmm))
+
+    s_dev2 = sum(devs) / len(data)
+    s_dev = np.sqrt(s_dev2)
+    return {'standard deviation': s_dev}
+
 def patient_normalise(data):
     """Normalise patient data from a 2D inflammation data array."""
     if np.any(data < 0):
@@ -74,6 +85,4 @@ def patient_normalise(data):
 
 def logistic_map(r: float, x: float) -> float:
     return r * x * (1 - x)
-
-
 
