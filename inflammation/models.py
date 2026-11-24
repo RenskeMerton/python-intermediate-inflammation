@@ -2,15 +2,15 @@
 
 The Model layer is responsible for the 'business logic' part of the software.
 
-Patients' data is held in an inflammation table (2D array) where each row contains 
-inflammation data for a single patient taken over a number of days 
+Patients' data is held in an inflammation table (2D array) where each row contains
+inflammation data for a single patient taken over a number of days
 and each column represents a single day across all patients.
 """
 
 import numpy as np
 
 
-def load_csv(filename):  
+def load_csv(filename):
     """Load a Numpy array from a CSV
 
     :param filename: Filename of CSV to load
@@ -19,21 +19,29 @@ def load_csv(filename):
 
 
 def daily_mean(data):
-    """Calculate the daily mean of a 2d inflammation data array."""
+    """Calculate the daily mean of a 2D inflammation data array for each day.
+
+    :param data: 2D array of inflammation data
+    :returns: An array of mean daily values"""
     return np.mean(data, axis=0)
 
 
 def daily_max(data):
-    """Calculate the daily max of a 2d inflammation data array."""
+    """Calculate the daily max of a 2D inflammation data array.
+
+    :param data: 2D array of inflammation data
+    :returns: An array of max daily values"""
     return np.max(data, axis=0)
 
 
 def daily_min(data):
-    """Calculate the daily min of a 2d inflammation data array."""
+    """Calculate the daily min of a 2D inflammation data array.
+
+    :param data: 2D array of inflammation data
+    :returns: An array of min daily values"""
     return np.min(data, axis=0)
 
-
-def s_dev(data):
+def daily_s_dev(data):
     """Computes and returns standard deviation for data."""
     data_mean = np.mean(data, axis=0)
     devs = []
@@ -41,4 +49,21 @@ def s_dev(data):
         devs.append((entry - mmm) * (entry - mmm))
 
     s_dev2 = sum(devs) / len(data)
-    return {'standard deviation': s_dev2}
+    s_dev = np.sqrt(s_dev2)
+    return {'standard deviation': s_dev}
+
+def patient_normalise(data):
+    """Normalise patient data from a 2D inflammation data array."""
+    if np.any(data < 0):
+        raise ValueError('Inflammation data must be positive')
+
+    max_data = np.nanmax(data, axis=1)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        normalised = data / max_data[:, np.newaxis]
+    normalised[np.isnan(normalised)] = 0
+    normalised[normalised < 0] = 0
+    return normalised
+
+def logistic_map(r: float, x: float) -> float:
+    return r * x * (1 - x)
+
